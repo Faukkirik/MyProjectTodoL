@@ -14,31 +14,46 @@ export type PropsType = {
     removeTask: (id: string) => void
     changeFilter: (value: FilterValuesType) => void
     addTask: (title: string) => void
+    changeTaskStatus: (taskId: string, isDone: boolean) => void
+    filter: FilterValuesType
 }
 
 export const Todolist = (props: PropsType) => {
     let [newTaskTitle, setNewTaskTitle] = useState('')
+    let [error, setError] = useState<string | null>(null)
 
-    const onChangeHandler =(e: ChangeEvent<HTMLInputElement>)=>{
+    const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
         setNewTaskTitle(e.currentTarget.value)
+        setError(null)
     }
-    const onKeyPressHandler =(e: KeyboardEvent<HTMLInputElement>)=>{
+    const onKeyPressHandler = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {
+            if (newTaskTitle.trim() === '') {
+                setError("Title is required")
+                setNewTaskTitle('')
+            } else {
+                props.addTask(newTaskTitle)
+                setNewTaskTitle('')
+            }
+        }
+    }
+    const addTask = () => {
+        if (newTaskTitle.trim() === '') {
+            setError("Title is required")
+            setNewTaskTitle('')
+        } else {
             props.addTask(newTaskTitle)
             setNewTaskTitle('')
         }
+
     }
-    const addTask =()=>{
-        props.addTask(newTaskTitle)
-        setNewTaskTitle('')
-    }
-    const onAllClickHandler=()=>{
+    const onAllClickHandler = () => {
         props.changeFilter("all")
     }
-    const onActiveClickHandler=()=>{
+    const onActiveClickHandler = () => {
         props.changeFilter("active")
     }
-    const onCompletedClickHandler=()=>{
+    const onCompletedClickHandler = () => {
         props.changeFilter("completed")
     }
     return (
@@ -46,6 +61,7 @@ export const Todolist = (props: PropsType) => {
             <h3>{props.title}</h3>
             <div>
                 <input
+                    className={error ? "error" : ""}
                     value={newTaskTitle}
                     onChange={onChangeHandler}
                     onKeyPress={onKeyPressHandler}
@@ -53,22 +69,36 @@ export const Todolist = (props: PropsType) => {
                 <button onClick={addTask}>+
                 </button>
             </div>
+            {error && <div className={"error-message"}>{error}</div>}
             <ul>{props.tasks.map(el => {
-                const onRemoveHandler =()=>{
+                const onRemoveHandler = () => {
                     props.removeTask(el.id)
                 }
-                return <li key={el.id}><input type="checkbox" checked={el.isDone}/> <span>{el.title}</span>
+                return <li key={el.id}>
+                    <input
+                        type="checkbox"
+                        checked={el.isDone}
+                        onChange={(e) => {
+                            props.changeTaskStatus(el.id, e.currentTarget.checked)
+                        }}
+                    /> <span className={el.isDone ? "is-done" : ""}>{el.title}</span>
                     <button onClick={onRemoveHandler}>x
                     </button>
                 </li>
             })}
             </ul>
             <div>
-                <button onClick={onAllClickHandler}>All
+                <button
+                    className={props.filter === "all" ? "active-filter" : ""}
+                    onClick={onAllClickHandler}>All
                 </button>
-                <button onClick={onActiveClickHandler}>Active
+                <button
+                    className={props.filter === "active" ? "active-filter" : ""}
+                    onClick={onActiveClickHandler}>Active
                 </button>
-                <button onClick={onCompletedClickHandler}>Completed
+                <button
+                    className={props.filter === "completed" ? "active-filter" : ""}
+                    onClick={onCompletedClickHandler}>Completed
                 </button>
             </div>
         </div>
