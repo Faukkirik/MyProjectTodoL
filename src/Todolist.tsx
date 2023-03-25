@@ -1,6 +1,7 @@
-import React from "react";
+import React, {ChangeEvent} from "react";
 import {FilterValuesType} from "./App";
 import {AddItemForm} from "./AddItemForm";
+import {EditableSpan} from "./EditableSpan";
 
 export type TaskType = {
     id: string
@@ -19,6 +20,8 @@ export type PropsType = {
     changeTaskStatus: (taskId: string, isDone: boolean, todolistId: string) => void
     filter: FilterValuesType
     removeTodolist: (todolistId: string) => void
+    changeTaskTitle: (id: string, title: string, todolistId: string) => void
+    changeTodolistTitle: (title: string, todolistId:string)=>void
 }
 
 export const Todolist = (props: PropsType) => {
@@ -34,25 +37,35 @@ export const Todolist = (props: PropsType) => {
     const onClickRemoveTodolistHandler = () => {
         props.removeTodolist(props.todolistId)
     }
-    const addTask =(title: string)=>{
+    const addTask = (title: string) => {
         props.addTask(title, props.todolistId)
+    }
+    const onChangeTodolistTitle = (title: string) => {
+        props.changeTodolistTitle(title, props.todolistId)
     }
     return (
         <div>
-            <h3>{props.title}<button onClick={onClickRemoveTodolistHandler}>X</button></h3>
+            <h3><EditableSpan title={props.title} onChange={onChangeTodolistTitle}/>
+                <button onClick={onClickRemoveTodolistHandler}>X</button>
+            </h3>
             <AddItemForm addItem={addTask}/>
             <ul>{props.tasks.map(el => {
                 const onRemoveHandler = () => {
                     props.removeTask(el.id, props.todolistId)
                 }
-                return <li key={el.id}>
+                const onChangeTaskStatus = (e: ChangeEvent<HTMLInputElement>) => {
+                    props.changeTaskStatus(el.id, e.currentTarget.checked, props.todolistId)
+                }
+                const onChangeTaskTitle = (title: string) => {
+                    props.changeTaskTitle(el.id, title, props.todolistId)
+                }
+                return <li key={el.id} className={el.isDone ? "is-done" : ""}>
                     <input
                         type="checkbox"
                         checked={el.isDone}
-                        onChange={(e) => {
-                            props.changeTaskStatus(el.id, e.currentTarget.checked, props.todolistId)
-                        }}
-                    /> <span className={el.isDone ? "is-done" : ""}>{el.title}</span>
+                        onChange={onChangeTaskStatus}
+                    />
+                    <EditableSpan title={el.title} onChange={onChangeTaskTitle}/>
                     <button onClick={onRemoveHandler}>x
                     </button>
                 </li>
