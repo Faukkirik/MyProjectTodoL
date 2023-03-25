@@ -2,12 +2,16 @@ import React, {useState} from 'react';
 import './App.css';
 import {TaskType, Todolist} from "./Todolist";
 import {v1} from "uuid";
+import {AddItemForm} from "./AddItemForm";
 
 export type FilterValuesType = "all" | "active" | "completed"
 export type TodolistType = {
     id: string
     title: string
     filter: FilterValuesType
+}
+export type TasksStateType ={
+    [key: string]: Array<TaskType>
 }
 
 function App() {
@@ -17,7 +21,7 @@ function App() {
         {id: todolistId1, title: "What to learn", filter: "all"},
         {id: todolistId2, title: "What to buy", filter: "all"}
     ])
-    let [tasks, setTasks] = useState({
+    let [tasks, setTasks] = useState<TasksStateType>({
         [todolistId1]: [
             {id: v1(), title: "HTML&CSS", isDone: true},
             {id: v1(), title: "JS", isDone: true},
@@ -27,12 +31,17 @@ function App() {
             {id: v1(), title: "Book", isDone: true},
             {id: v1(), title: "Milk", isDone: false}]
     })
-    const removeTodolist = (todolistId: string) =>{
-        setTodolists(todolists.filter(el=>el.id !== todolistId))
+    const removeTodolist = (todolistId: string) => {
+        setTodolists(todolists.filter(el => el.id !== todolistId))
         delete tasks[todolistId]
     }
     const removeTask = (id: string, todolistId: string) => {
         setTasks({...tasks, [todolistId]: tasks[todolistId].filter(el => el.id !== id)})
+    }
+    const addTodolist = (title: string) => {
+        let newTodolist: TodolistType = {id: v1(), title: title, filter: "all"}
+        setTodolists([newTodolist, ...todolists])
+        setTasks({...tasks, [newTodolist.id]: []})
     }
     const addTask = (title: string, todolistId: string) => {
         if (title.trim() === '') {
@@ -50,11 +59,11 @@ function App() {
         }
     }
     const changeStatus = (taskId: string, isDone: boolean, todolistId: string) => {
-        //setTasks(tasks.map(el => el.id === taskId ? {...el, isDone: isDone} : el))
-        setTasks({...tasks, [todolistId]: tasks[todolistId].map(el=>el.id === taskId ? {...el, isDone: isDone}: el)})
+        setTasks({...tasks, [todolistId]: tasks[todolistId].map(el => el.id === taskId ? {...el, isDone: isDone} : el)})
     }
     return (
         <div className="App">
+            <AddItemForm addItem={addTodolist}/>
             {todolists.map(el => {
                 let tasksForTodolist = tasks[el.id]
                 if (el.filter === "active") {
