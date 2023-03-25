@@ -63,8 +63,7 @@ export const Todolist = (props: PropsType) => {
     }
     return (
         <div>
-            <h3>{props.title}</h3>
-            <button onClick={onClickRemoveTodolistHandler}>X</button>
+            <h3>{props.title}<button onClick={onClickRemoveTodolistHandler}>X</button></h3>
             <div>
                 <input
                     className={error ? "error" : ""}
