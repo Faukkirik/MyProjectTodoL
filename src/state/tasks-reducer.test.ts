@@ -1,4 +1,4 @@
-import {addTaskAC, ChangeTaskFilterAC, changeTaskStatusAC, removeTaskAC, tasksReducer} from './tasks-reducer'
+import {addTaskAC, ChangeTaskTitleAC, changeTaskStatusAC, removeTaskAC, tasksReducer} from './tasks-reducer'
 import { TasksStateType } from '../App'
 import {addTodolistAC, removeTodolistAC} from "./todolists-reducer";
 
@@ -92,7 +92,7 @@ test('title of specified task should be changed', () => {
         ]
     }
 
-    const action = ChangeTaskFilterAC('2', 'beer', 'todolistId2')
+    const action = ChangeTaskTitleAC('2', 'beer', 'todolistId2')
 
     const endState = tasksReducer(startState, action)
 
