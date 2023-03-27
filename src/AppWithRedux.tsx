@@ -1,7 +1,6 @@
-import React, {useReducer} from 'react';
+import React from 'react';
 import './App.css';
-import {TaskType, Todolist} from "./Todolist";
-import {v1} from "uuid";
+import {TaskType} from "./Todolist";
 import {AddItemForm} from "./AddItemForm";
 import {AppBar, Button, Container, Grid, IconButton, Paper, Toolbar, Typography} from "@material-ui/core";
 import {Menu} from "@material-ui/icons";
@@ -10,11 +9,11 @@ import {
     changeTodolistFilterAC,
     changeTodolistTitleAC,
     removeTodolistAC,
-    todolistsReducer
 } from "./state/todolists-reducer";
-import {addTaskAC, ChangeTaskTitleAC, changeTaskStatusAC, removeTaskAC, tasksReducer} from "./state/tasks-reducer";
+import {addTaskAC, ChangeTaskTitleAC, changeTaskStatusAC, removeTaskAC} from "./state/tasks-reducer";
 import {useDispatch, useSelector} from "react-redux";
 import {AppRootState} from "./state/store";
+import {TodolistWithRedux} from "./TodolistWithRedux";
 
 export type FilterValuesType = "all" | "active" | "completed"
 export type TodolistType = {
@@ -37,12 +36,11 @@ export function AppWithRedux() {
     const onChangeTodolistTitle = (title: string, todolistId: string) => {
         dispatch(changeTodolistTitleAC(todolistId, title))
     }
+    const addTodolist = (title: string) => {
+        dispatch(addTodolistAC(title))
+    }
     const removeTask = (id: string, todolistId: string) => {
         dispatch(removeTaskAC(id, todolistId))
-    }
-    const addTodolist = (title: string) => {
-        const action = addTodolistAC(title)
-        dispatch(action)
     }
     const addTask = (title: string, todolistId: string) => {
         dispatch(addTaskAC(title, todolistId))
@@ -84,7 +82,7 @@ export function AppWithRedux() {
                         }
                         return <Grid item>
                             <Paper style={{paddingBlock: "10px"}}>
-                                <Todolist
+                                <TodolistWithRedux
                                     key={el.id}
                                     todolistId={el.id}
                                     title={el.title}
