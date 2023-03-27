@@ -1,4 +1,4 @@
-import React, {ChangeEvent, KeyboardEvent, useState} from "react";
+import React, {ChangeEvent, KeyboardEvent, memo, useState} from "react";
 import {Button, TextField} from "@material-ui/core";
 import {Send} from "@material-ui/icons";
 
@@ -7,7 +7,8 @@ export type AddItemFormType = {
     addItem:(title: string)=>void
 }
 
-export const AddItemForm = (props: AddItemFormType) => {
+export const AddItemForm = memo((props: AddItemFormType) => {
+    console.log("AddItemForm rendered")
     let [newTaskTitle, setNewTaskTitle] = useState('')
     let [error, setError] = useState<string | null>(null)
     const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
@@ -50,4 +51,4 @@ export const AddItemForm = (props: AddItemFormType) => {
             <Button onClick={addTask} variant={"contained"} color="primary" size={'medium'}><Send/></Button>
         </div>
     )
-}
+})
